@@ -8,7 +8,7 @@ const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
 
-const stripe = require("stripe")(process.env.STRIP_BACKEND_KEY);
+const stripe = require("stripe")(process.env.STRIPE_BACKEND_KEY);
 
 const INR_TO_USD_CONVERSION_RATE = 83.91;
 
