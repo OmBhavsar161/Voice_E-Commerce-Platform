@@ -24,7 +24,7 @@ app.use(
 );
 
 // Serve static files from 'public' directory
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+app.use("/images", express.static(path.join(__dirname, "upload/images")));
 
 // Connect to MongoDB without deprecated options
 mongoose
