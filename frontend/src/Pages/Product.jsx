@@ -10,12 +10,15 @@ const Product = () => {
   const { all_product } = useContext(ShopContext);
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const localProduct = all_product.find((e) => e.id === Number(productId));
 
     if (localProduct) {
       setProduct(localProduct);
+      setLoading(false);
     } else {
       const fetchProductFromMongo = async () => {
         try {
@@ -27,7 +30,9 @@ const Product = () => {
           setProduct(productData);
         } catch (error) {
           console.error("Error fetching product from MongoDB:", error);
-          // Optionally handle or set fallback product here
+          setError("Failed to load product details.");
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -35,8 +40,16 @@ const Product = () => {
     }
   }, [productId, all_product]);
 
-  if (!product) {
+  if (loading) {
     return <div>Loading...</div>; // Show a loading state while fetching data
+  }
+
+  if (error) {
+    return <div>{error}</div>; // Show error message if there is an error
+  }
+
+  if (!product) {
+    return <div>Product not found.</div>; // Show a message if the product is not found
   }
 
   return (
