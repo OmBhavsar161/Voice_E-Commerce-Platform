@@ -34,19 +34,29 @@ app.get("/", (req, res) => {
   res.send("Express App is Running");
 });
 
+// -----------------------------------------------------------------------------------------------------
 const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
 
 // Configure Cloudinary with the URL
 cloudinary.config({
   url: process.env.CLOUDINARY_URL
 });
 
-// Use multer for handling file uploads
-const upload = multer({ dest: 'uploads/' }); // Temporary directory
+// Use multer to handle file uploads as streams
+const upload = multer({ storage: multer.memoryStorage() }); // Store files in memory
 
 // Image upload endpoint
 app.post('/upload', upload.single('product'), (req, res) => {
-  cloudinary.uploader.upload(req.file.path, (error, result) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  // Convert buffer to stream
+  const stream = streamifier.createReadStream(req.file.buffer);
+
+  // Upload file to Cloudinary
+  cloudinary.uploader.upload_stream({ resource_type: 'auto' }, (error, result) => {
     if (error) {
       return res.status(500).json({ error: 'Error uploading file' });
     }
@@ -54,9 +64,10 @@ app.post('/upload', upload.single('product'), (req, res) => {
       success: 1,
       image_url: result.secure_url, // Cloudinary URL
     });
-  });
+  }).end(req.file.buffer);
 });
 
+// -----------------------------------------------------------------------------------------------------
 
 // Product Schema
 const Product = mongoose.model("Product", {
