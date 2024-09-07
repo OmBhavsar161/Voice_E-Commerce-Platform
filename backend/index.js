@@ -1,5 +1,5 @@
 require("dotenv").config();
-const port = process.env.PORT;
+const port = process.env.PORT || 4000;
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -34,28 +34,26 @@ app.get("/", (req, res) => {
   res.send("Express App is Running");
 });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "/tmp"); // Use the /tmp directory for file storage
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`
-    );
-  },
+const cloudinary = require("cloudinary").v2;
+
+// Configure Cloudinary with the URL
+cloudinary.config({
+  url: process.env.CLOUDINARY_URL
 });
 
-const upload = multer({ storage: storage });
+// Use multer for handling file uploads
+const upload = multer({ dest: 'uploads/' }); // Temporary directory
 
-// Serve Uploaded Images (Only works if they're uploaded during the same runtime execution)
-app.use("/images", express.static("/tmp"));
-
-// Image Upload Endpoint
-app.post("/upload", upload.single("product"), (req, res) => {
-  res.json({
-    success: 1,
-    image_url: `https://ecom-vercel-backend.vercel.app/images/${req.file.filename}`, // changes
+// Image upload endpoint
+app.post('/upload', upload.single('product'), (req, res) => {
+  cloudinary.uploader.upload(req.file.path, (error, result) => {
+    if (error) {
+      return res.status(500).json({ error: 'Error uploading file' });
+    }
+    res.json({
+      success: 1,
+      image_url: result.secure_url, // Cloudinary URL
+    });
   });
 });
 
