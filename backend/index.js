@@ -34,9 +34,10 @@ app.get("/", (req, res) => {
   res.send("Express App is Running");
 });
 
-// Image Storage Engine
 const storage = multer.diskStorage({
-  destination: "./upload/images",
+  destination: (req, file, cb) => {
+    cb(null, "/tmp"); // Use the /tmp directory for file storage
+  },
   filename: (req, file, cb) => {
     cb(
       null,
@@ -44,10 +45,11 @@ const storage = multer.diskStorage({
     );
   },
 });
+
 const upload = multer({ storage: storage });
 
-// Serve Uploaded Images
-app.use("/images", express.static("upload/images"));
+// Serve Uploaded Images (Only works if they're uploaded during the same runtime execution)
+app.use("/images", express.static("/tmp"));
 
 // Image Upload Endpoint
 app.post("/upload", upload.single("product"), (req, res) => {
@@ -56,6 +58,7 @@ app.post("/upload", upload.single("product"), (req, res) => {
     image_url: `http://localhost:${port}/images/${req.file.filename}`,
   });
 });
+
 
 // Product Schema
 const Product = mongoose.model("Product", {
