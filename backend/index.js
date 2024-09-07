@@ -19,7 +19,9 @@ const convertINRToUSD = (amountInINR) => {
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://ecom-vercel-frontend.vercel.app", // Update this with your frontend URL
+    origin: "https://ecom-vercel-frontend.vercel.app", // Allow requests from your frontend domain
+    methods: ["GET", "POST"], // Specify allowed methods
+    allowedHeaders: ["Content-Type"], // Specify allowed headers
   })
 );
 
