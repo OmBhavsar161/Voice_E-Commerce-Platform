@@ -8,7 +8,7 @@ const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
 
-const stripe = require("stripe")(process.env.STRIPE_BACKEND_KEY);
+const stripe = require("stripe")(process.env.STRIPE_BACKEND_KEY); // Fixed typo
 
 const INR_TO_USD_CONVERSION_RATE = 83.91;
 
@@ -17,7 +17,14 @@ const convertINRToUSD = (amountInINR) => {
 };
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://ecom-vercel-frontend.vercel.app", // Update this with your frontend URL
+  })
+);
+
+// Serve static files from 'public' directory
+app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 // Connect to MongoDB without deprecated options
 mongoose
@@ -40,31 +47,33 @@ const streamifier = require("streamifier");
 
 // Configure Cloudinary with the URL
 cloudinary.config({
-  url: process.env.CLOUDINARY_URL
+  url: process.env.CLOUDINARY_URL,
 });
 
 // Use multer to handle file uploads as streams
 const upload = multer({ storage: multer.memoryStorage() }); // Store files in memory
 
 // Image upload endpoint
-app.post('/upload', upload.single('product'), (req, res) => {
+app.post("/upload", upload.single("product"), (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
+    return res.status(400).json({ error: "No file uploaded" });
   }
 
   // Convert buffer to stream
   const stream = streamifier.createReadStream(req.file.buffer);
 
   // Upload file to Cloudinary
-  cloudinary.uploader.upload_stream({ resource_type: 'auto' }, (error, result) => {
-    if (error) {
-      return res.status(500).json({ error: 'Error uploading file' });
-    }
-    res.json({
-      success: 1,
-      image_url: result.secure_url, // Cloudinary URL
-    });
-  }).end(req.file.buffer);
+  cloudinary.uploader
+    .upload_stream({ resource_type: "auto" }, (error, result) => {
+      if (error) {
+        return res.status(500).json({ error: "Error uploading file" });
+      }
+      res.json({
+        success: 1,
+        image_url: result.secure_url, // Cloudinary URL
+      });
+    })
+    .end(req.file.buffer);
 });
 
 // -----------------------------------------------------------------------------------------------------
@@ -110,12 +119,13 @@ const Product = mongoose.model("Product", {
   popular: { type: Boolean, default: false }, // New field added
 });
 
-
 // Add Product Endpoint
 app.post("/addproduct", async (req, res) => {
   try {
     // Find the highest current product ID
-    let highestProduct = await Product.findOne({}, 'id').sort({ id: -1 }).limit(1);
+    let highestProduct = await Product.findOne({}, "id")
+      .sort({ id: -1 })
+      .limit(1);
 
     // Calculate the next ID, starting from 40
     let nextId = highestProduct ? highestProduct.id + 1 : 40;
@@ -142,18 +152,22 @@ app.post("/addproduct", async (req, res) => {
   }
 });
 
-
-
 // Remove Product Endpoint
 app.post("/removeproduct", async (req, res) => {
-  await Product.findOneAndDelete({ id: req.body.id });
-  console.log("Removed");
-  res.json({
-    success: true,
-    name: req.body.name,
-  });
+  try {
+    await Product.findOneAndDelete({ id: req.body.id });
+    console.log("Removed");
+    res.json({
+      success: true,
+      name: req.body.name,
+    });
+  } catch (error) {
+    console.error("Error removing product:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to remove product" });
+  }
 });
-
 
 // Define the SupportPage schema
 const supportSchema = new mongoose.Schema({
@@ -188,10 +202,8 @@ const Support = mongoose.model("support_form_data", supportSchema);
 
 app.post("/support", async (req, res) => {
   try {
-    // Extract form data from request body
     const { name, email, phoneNumber, productId, issueDescription } = req.body;
 
-    // Create a new support request document
     const supportRequest = new Support({
       name,
       email,
@@ -200,10 +212,8 @@ app.post("/support", async (req, res) => {
       issueDescription,
     });
 
-    // Save the support request to the database
     await supportRequest.save();
 
-    // Send a success response
     res.json({
       success: true,
       message:
@@ -217,24 +227,19 @@ app.post("/support", async (req, res) => {
   }
 });
 
-
 // Route to fetch all support requests
 app.get("/supportdatafetch", async (req, res) => {
   try {
-    // Fetch all support requests from the database
     const supportRequests = await Support.find();
-
-    // Send the support requests as a JSON response
     res.json({
       success: true,
       data: supportRequests,
     });
   } catch (error) {
     console.error("Error fetching support requests:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch support requests.",
-    });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch support requests." });
   }
 });
 
@@ -243,66 +248,54 @@ app.post("/removesupport", async (req, res) => {
   try {
     const { id } = req.body;
 
-    // Validate the ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid ID format.",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid ID format." });
     }
 
-    // Delete the support request from the database
     const result = await Support.findByIdAndDelete(id);
 
-    // Check if the document was found and deleted
     if (!result) {
-      return res.status(404).json({
-        success: false,
-        message: "Support request not found.",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "Support request not found." });
     }
 
-    // Send success response
     res.json({
       success: true,
       message: "Support request removed successfully.",
     });
   } catch (error) {
     console.error("Error removing support request:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to remove support request.",
-    });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to remove support request." });
   }
 });
-
-
-
 
 // Stripe Payment Endpoint
 app.post("/create-checkout-session", async (req, res) => {
   try {
-    const { items } = req.body; // Extract items from request body
+    const { items } = req.body;
 
-    // Create a checkout session with Stripe
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"], // Payment methods accepted
+      payment_method_types: ["card"],
       line_items: items.map((item) => ({
         price_data: {
-          currency: "usd", // Currency for the payment
+          currency: "usd",
           product_data: {
-            name: item.name, // Name of the product
+            name: item.name,
           },
-          unit_amount: convertINRToUSD(item.price), // Price in cents (USD)
+          unit_amount: convertINRToUSD(item.price),
         },
-        quantity: item.quantity, // Quantity of the product
+        quantity: item.quantity,
       })),
-      mode: "payment", // Mode of the checkout session
-      success_url: "https://localhost:5173/success", // Redirect URL after successful payment
-      cancel_url: "https://localhost:5173/cancel", // Redirect URL after payment cancellation
+      mode: "payment",
+      success_url: "https://localhost:5173/success", // Update with the correct URL
+      cancel_url: "https://localhost:5173/cancel", // Update with the correct URL
     });
 
-    // Send session ID to the client to redirect to the Stripe checkout
     res.json({ sessionId: session.id });
   } catch (error) {
     console.error("Error creating checkout session:", error);
@@ -310,8 +303,7 @@ app.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-
-  // Get All Products Endpoint
+// Get All Products Endpoint
 app.get("/allproducts", async (req, res) => {
   try {
     const products = await Product.find({});
@@ -339,16 +331,16 @@ app.get("/product/:id", async (req, res) => {
 // New collection Endpoint
 app.get("/newcollections", async (req, res) => {
   try {
-    const products = await Product.find({}).sort({ date: -1 }).limit(8); // Fetch the 8 latest products
+    const products = await Product.find({}).sort({ date: -1 }).limit(8);
     console.log("New Collections Fetched");
-    res.json(products); // Send the products as a response
+    res.json(products);
   } catch (error) {
     console.error("Error fetching new collections:", error);
     res.status(500).json({ message: "Failed to fetch new collections" });
   }
 });
 
-//Endpoint to fetch popular Products
+// Endpoint to fetch popular Products
 app.get("/popular-products", async (req, res) => {
   try {
     const popularProducts = await Product.find({ popular: true });
@@ -363,7 +355,6 @@ app.get("/popular-products", async (req, res) => {
 app.post("/togglePopular", async (req, res) => {
   const { id, isPopular } = req.body;
   try {
-    // Assuming `Product` is your model
     const product = await Product.findOneAndUpdate(
       { id: id },
       { $set: { popular: isPopular } },
@@ -379,9 +370,8 @@ app.post("/updateproduct", async (req, res) => {
   const { id, name, old_price, new_price, category, off_percentage } = req.body;
 
   try {
-    // Use `findOneAndUpdate` to match by `id`, not `_id`
     const updatedProduct = await Product.findOneAndUpdate(
-      { id }, // Matching the product by `id` field
+      { id },
       {
         name,
         old_price,
@@ -389,7 +379,7 @@ app.post("/updateproduct", async (req, res) => {
         category,
         off_percentage,
       },
-      { new: true } // Return the updated product
+      { new: true }
     );
 
     if (!updatedProduct) {
@@ -402,24 +392,6 @@ app.post("/updateproduct", async (req, res) => {
     res.status(500).json({ message: "Error updating product details" });
   }
 });
-
-
-
-// // Route to update all products with the 'popular' field use Thunder-client POST request to update all existing fields
-// app.post('/update-all-products', async (req, res) => {
-//   try {
-//     const result = await Product.updateMany({}, { $set: { popular: false } });
-//     res.json({
-//       success: true,
-//       message: `Updated ${result.nModified} products`,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: 'Error updating products' });
-//   }
-// });
-
-
-
 
 // Start Server
 app.listen(port, (error) => {
