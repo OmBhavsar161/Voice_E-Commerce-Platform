@@ -292,8 +292,8 @@ app.post("/create-checkout-session", async (req, res) => {
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url: "https://localhost:5173/success", // Update with the correct URL
-      cancel_url: "https://localhost:5173/cancel", // Update with the correct URL
+      success_url: "https://ecom-vercel-frontend.vercel.app/success", // Update with the correct URL
+      cancel_url: "https://ecom-vercel-frontend.vercel.app/cancel", // Update with the correct URL
     });
 
     res.json({ sessionId: session.id });
