@@ -9,7 +9,14 @@ const formatPrice = (price) => {
 const Item = (props) => {
   return (
     <div className="w-[300px] hover:scale-105 transition duration-[600ms]">
-      <Link to={`/products/${props.id}`}><img onClick={window.scrollTo(0,0)} src={props.image} alt="" className="w-[300px]" /></Link>
+      <Link to={`/products/${props.id}`}>
+        <img
+          src={props.image}
+          alt={props.name}
+          className="w-[300px]"
+          onError={(e) => { e.target.src = 'https://via.placeholder.com/300'; }} // Placeholder image
+        />
+      </Link>
       <p className="my-[6px] mx-0 text-[22px] font-bold mt-8">{props.name}</p>
       <div className="flex gap-[8px] mt-4 items-center">
         <div className="text-gray-800 text-[22px] font-semibold">
