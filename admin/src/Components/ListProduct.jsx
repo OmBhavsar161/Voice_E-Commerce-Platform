@@ -8,7 +8,7 @@ const ListProduct = () => {
 
   const fetchInfo = async () => {
     try {
-      const response = await fetch("http://localhost:4000/allproducts");
+      const response = await fetch("https://ecom-vercel-backend.vercel.app/allproducts");
       const data = await response.json();
       setAllProducts(data);
     } catch (error) {
@@ -22,7 +22,7 @@ const ListProduct = () => {
 
   const togglePopularStatus = async (productId, isPopular) => {
     try {
-      const response = await fetch("http://localhost:4000/togglePopular", {
+      const response = await fetch("https://ecom-vercel-backend.vercel.app/togglePopular", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -43,7 +43,7 @@ const ListProduct = () => {
 
   const removeProduct = async (id) => {
     try {
-      const response = await fetch("http://localhost:4000/removeproduct", {
+      const response = await fetch("https://ecom-vercel-backend.vercel.app/removeproduct", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -69,7 +69,7 @@ const ListProduct = () => {
 
   const handleSaveClick = async () => {
     try {
-      const response = await fetch("http://localhost:4000/updateproduct", {
+      const response = await fetch("https://ecom-vercel-backend.vercel.app/updateproduct", {
         method: "POST",
         headers: {
           Accept: "application/json",

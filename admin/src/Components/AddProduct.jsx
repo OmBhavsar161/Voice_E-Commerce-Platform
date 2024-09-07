@@ -49,7 +49,7 @@ const AddProduct = () => {
     formData.append('product', imageFile); // Append the file with field name 'product'
 
     try {
-      const uploadResponse = await fetch('http://localhost:4000/upload', {
+      const uploadResponse = await fetch('https://ecom-vercel-backend.vercel.app/upload', {
         method: 'POST',
         body: formData
       });
@@ -63,7 +63,7 @@ const AddProduct = () => {
         };
 
         // Send product details with the image URL to backend
-        const addProductResponse = await fetch('http://localhost:4000/addproduct', {
+        const addProductResponse = await fetch('https://ecom-vercel-backend.vercel.app/addproduct', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

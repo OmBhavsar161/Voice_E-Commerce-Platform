@@ -35,7 +35,7 @@ const Support = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("http://localhost:4000/support", {
+        const response = await fetch("https://ecom-vercel-backend.vercel.app/support", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -17,7 +17,7 @@ const ShopCategory = (props) => {
   useEffect(() => {
     const fetchNewProducts = async () => {
       try {
-        const response = await fetch("http://localhost:4000/allproducts");
+        const response = await fetch("https://ecom-vercel-backend.vercel.app/allproducts");
         const data = await response.json();
         setNewProducts(data);
         if (setAllProducts) setAllProducts(data); // Update context if needed

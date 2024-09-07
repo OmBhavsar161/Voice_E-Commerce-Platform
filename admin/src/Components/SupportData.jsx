@@ -6,7 +6,7 @@ const SupportData = () => {
 
   const fetchSupportData = async () => {
     try {
-      const response = await fetch("http://localhost:4000/supportdatafetch");
+      const response = await fetch("https://ecom-vercel-backend.vercel.app/supportdatafetch");
       const result = await response.json();
       if (result.success) {
         setSupportRequests(result.data); // Access 'data' field from the response
@@ -24,7 +24,7 @@ const SupportData = () => {
 
   const removeSupportRequest = async (id) => {
     try {
-      const response = await fetch("http://localhost:4000/removesupport", {
+      const response = await fetch("https://ecom-vercel-backend.vercel.app/removesupport", {
         method: "POST",
         headers: {
           "Accept": "application/json",

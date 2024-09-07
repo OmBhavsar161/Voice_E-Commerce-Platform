@@ -19,7 +19,7 @@ const Product = () => {
     } else {
       const fetchProductFromMongo = async () => {
         try {
-          const response = await fetch(`http://localhost:4000/product/${productId}`);
+          const response = await fetch(`https://ecom-vercel-backend.vercel.app/product/${productId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }

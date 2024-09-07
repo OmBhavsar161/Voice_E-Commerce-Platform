@@ -8,7 +8,7 @@ const NewCollections = () => {
     // Fetch new collection data from backend
     const fetchNewCollections = async () => {
       try {
-        const response = await fetch("http://localhost:4000/newcollections"); // Adjust the backend URL if deployed
+        const response = await fetch("https://ecom-vercel-backend.vercel.app/newcollections"); // Adjust the backend URL if deployed
         const data = await response.json();
         setNewCollection(data); // Set the fetched data to state
       } catch (error) {

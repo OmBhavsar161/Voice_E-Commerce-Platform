@@ -27,7 +27,7 @@ const CartItems = () => {
     // Fetch products from MongoDB
     const fetchMongoProducts = async () => {
       try {
-        const response = await fetch('http://localhost:4000/allproducts');
+        const response = await fetch('https://ecom-vercel-backend.vercel.app/allproducts');
         if (response.ok) {
           const data = await response.json();
           setMongoProducts(data);
@@ -91,7 +91,7 @@ const CartItems = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:4000/create-checkout-session', {
+      const response = await fetch('https://ecom-vercel-backend.vercel.app/create-checkout-session', {
         method: "POST",
         headers: headers,
         body: JSON.stringify(body),
