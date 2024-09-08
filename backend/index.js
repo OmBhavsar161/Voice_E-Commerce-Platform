@@ -17,9 +17,20 @@ const convertINRToUSD = (amountInINR) => {
 };
 
 app.use(express.json());
+const allowedOrigins = [
+  "https://ecom-vercel-frontend.vercel.app",
+  "https://ecom-vercel-admin.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "https://ecom-vercel-frontend.vercel.app", // Allow requests from your frontend domain
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST"], // Specify allowed methods
     allowedHeaders: ["Content-Type"], // Specify allowed headers
   })
