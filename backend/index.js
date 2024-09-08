@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
+const success_redirect_url = process.env.SUCCESS_REDIRECT;
 
 const stripe = require("stripe")(process.env.STRIPE_BACKEND_KEY); // Fixed typo
 
@@ -21,7 +22,7 @@ const allowedOrigins = [
   "https://ecom-vercel-frontend.vercel.app",
   "https://ecom-vercel-admin.vercel.app",
   "http://localhost:5174",
-  "http://localhost:5173",
+  "https://localhost:5173",
 ];
 
 app.use(
@@ -307,8 +308,8 @@ app.post("/create-checkout-session", async (req, res) => {
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url: "https://ecom-vercel-frontend.vercel.app/success", // Update with the correct URL
-      cancel_url: "https://ecom-vercel-frontend.vercel.app/cancel", // Update with the correct URL
+      success_url: `${success_redirect_url}/success`, // Update with the correct URL
+      cancel_url: `${success_redirect_url}/cancel`, // Update with the correct URL
     });
 
     res.json({ sessionId: session.id });

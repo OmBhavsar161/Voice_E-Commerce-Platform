@@ -12,6 +12,7 @@ const Support = () => {
   const [formErrors, setFormErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState('');
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,7 +36,7 @@ const Support = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("https://ecom-vercel-backend.vercel.app/support", {
+        const response = await fetch(`${baseURL}/support`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

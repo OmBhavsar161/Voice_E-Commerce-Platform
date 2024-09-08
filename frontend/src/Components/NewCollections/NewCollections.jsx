@@ -3,12 +3,13 @@ import Item from '../Item/Item';
 
 const NewCollections = () => {
   const [newCollection, setNewCollection] = useState([]);
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Fetch new collection data from backend
     const fetchNewCollections = async () => {
       try {
-        const response = await fetch("https://ecom-vercel-backend.vercel.app/newcollections"); // Adjust the backend URL if deployed
+        const response = await fetch(`${baseURL}/newcollections`); // Adjust the backend URL if deployed
         const data = await response.json();
         setNewCollection(data); // Set the fetched data to state
       } catch (error) {

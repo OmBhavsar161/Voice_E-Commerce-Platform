@@ -22,12 +22,13 @@ const CartItems = () => {
 
   // State to hold products fetched from MongoDB
   const [mongoProducts, setMongoProducts] = useState([]);
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Fetch products from MongoDB
     const fetchMongoProducts = async () => {
       try {
-        const response = await fetch('https://ecom-vercel-backend.vercel.app/allproducts');
+        const response = await fetch(`${baseURL}/allproducts`);
         if (response.ok) {
           const data = await response.json();
           setMongoProducts(data);
@@ -91,7 +92,7 @@ const CartItems = () => {
     };
 
     try {
-      const response = await fetch('https://ecom-vercel-backend.vercel.app/create-checkout-session', {
+      const response = await fetch(`${baseURL}/create-checkout-session`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(body),

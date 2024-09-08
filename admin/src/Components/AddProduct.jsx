@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 const AddProduct = () => {
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null); // Store the file
+  const baseURL =  import.meta.env.VITE_API_URL;
+  
   const [productDetails, setProductDetails] = useState({
     name: "",
     image: "",
@@ -49,7 +51,7 @@ const AddProduct = () => {
     formData.append('product-vercel', imageFile); // Append the file with field name 'product' ------ change name here
 
     try {
-      const uploadResponse = await fetch('https://ecom-vercel-backend.vercel.app/upload', {
+      const uploadResponse = await fetch(`${baseURL}/upload`, {
         method: 'POST',
         body: formData
       });
@@ -63,7 +65,7 @@ const AddProduct = () => {
         };
 
         // Send product details with the image URL to backend
-        const addProductResponse = await fetch('https://ecom-vercel-backend.vercel.app/addproduct', {
+        const addProductResponse = await fetch(`${baseURL}/addproduct`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

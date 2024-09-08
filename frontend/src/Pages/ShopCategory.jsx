@@ -7,6 +7,7 @@ const ShopCategory = (props) => {
   const { all_product, setAllProducts } = useContext(ShopContext);
   const [products, setProducts] = useState([]);
   const [newProducts, setNewProducts] = useState([]);
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   // Fetch local products from context
   useEffect(() => {
@@ -17,7 +18,7 @@ const ShopCategory = (props) => {
   useEffect(() => {
     const fetchNewProducts = async () => {
       try {
-        const response = await fetch("https://ecom-vercel-backend.vercel.app/allproducts");
+        const response = await fetch(`${baseURL}/allproducts`);
         const data = await response.json();
         setNewProducts(data);
         if (setAllProducts) setAllProducts(data); // Update context if needed

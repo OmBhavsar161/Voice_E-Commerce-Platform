@@ -3,14 +3,15 @@ import Item from "../Item/Item";
 
 const Popular = () => {
   const [popularProducts, setPopularProducts] = useState([]);
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Fetch popular products from your backend or context
     const fetchPopularProducts = async () => {
       try {
-        const response = await fetch("https://ecom-vercel-backend.vercel.app/popular-products");
+        const response = await fetch(`${baseURL}/popular-products`);
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
         setPopularProducts(data);

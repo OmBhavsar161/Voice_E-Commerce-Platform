@@ -12,13 +12,14 @@ const ProductDisplay = () => {
 
   useEffect(() => {
     const localProduct = all_product.find((e) => e.id === Number(productId));
+    const baseURL =  import.meta.env.VITE_API_URL;
 
     if (localProduct) {
       setProduct(localProduct);
     } else {
       const fetchProductFromMongo = async () => {
         try {
-          const response = await fetch(`https://ecom-vercel-backend.vercel.app/product/${productId}`);
+          const response = await fetch(`${baseURL}/product/${productId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
