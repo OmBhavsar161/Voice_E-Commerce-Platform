@@ -12,7 +12,8 @@
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "/App.jsx"
+        "dest": "/App.jsx",
+        "continue": true
       }
     ]
   }
