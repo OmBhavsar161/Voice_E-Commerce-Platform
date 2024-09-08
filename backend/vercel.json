@@ -1,24 +1,17 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "index.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/success",
-        "dest": "/index.js"
-      },
-      {
-        "src": "/cancel",
-        "dest": "/index.js"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/index.js"
-      }
-    ]
-  }
-  
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/success",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/cancel",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
