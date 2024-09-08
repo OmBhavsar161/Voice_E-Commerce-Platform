@@ -46,7 +46,7 @@ const AddProduct = () => {
     }
 
     const formData = new FormData();
-    formData.append('product-vercel', imageFile); // Append the file with field name 'product'
+    formData.append('product-vercel', imageFile); // Append the file with field name 'product' ------ change name here
 
     try {
       const uploadResponse = await fetch('https://ecom-vercel-backend.vercel.app/upload', {
@@ -79,7 +79,7 @@ const AddProduct = () => {
             hideProgressBar: true
           });
 
-          console.log("Product Details:", updatedProduct); // Print the whole object with all details ------ change name here
+          console.log("Product Details:", updatedProduct); // Print the whole object with all details
 
           // Reset form fields and image preview
           setProductDetails({
