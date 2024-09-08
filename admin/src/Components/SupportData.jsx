@@ -3,10 +3,11 @@ import delete_icon from '../assets/delete_icon.svg';
 
 const SupportData = () => {
   const [supportRequests, setSupportRequests] = useState([]);
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   const fetchSupportData = async () => {
     try {
-      const response = await fetch("https://ecom-vercel-backend.vercel.app/supportdatafetch");
+      const response = await fetch(`${baseURL}/supportdatafetch`);
       const result = await response.json();
       if (result.success) {
         setSupportRequests(result.data); // Access 'data' field from the response
@@ -24,7 +25,7 @@ const SupportData = () => {
 
   const removeSupportRequest = async (id) => {
     try {
-      const response = await fetch("https://ecom-vercel-backend.vercel.app/removesupport", {
+      const response = await fetch(`${baseURL}/removesupport`, {
         method: "POST",
         headers: {
           "Accept": "application/json",

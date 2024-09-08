@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import delete_icon from "../assets/delete_icon.svg";
 
+
 const ListProduct = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(null); // Track which product is being edited
   const [editedProduct, setEditedProduct] = useState({}); // Store edited product details
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   const fetchInfo = async () => {
     try {
-      const response = await fetch("https://ecom-vercel-backend.vercel.app/allproducts");
+      const response = await fetch(`${baseURL}/allproducts`);
       const data = await response.json();
       setAllProducts(data);
     } catch (error) {
@@ -22,7 +24,7 @@ const ListProduct = () => {
 
   const togglePopularStatus = async (productId, isPopular) => {
     try {
-      const response = await fetch("https://ecom-vercel-backend.vercel.app/togglePopular", {
+      const response = await fetch(`${baseURL}/togglePopular`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -43,7 +45,7 @@ const ListProduct = () => {
 
   const removeProduct = async (id) => {
     try {
-      const response = await fetch("https://ecom-vercel-backend.vercel.app/removeproduct", {
+      const response = await fetch(`${baseURL}/removeproduct`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -69,7 +71,7 @@ const ListProduct = () => {
 
   const handleSaveClick = async () => {
     try {
-      const response = await fetch("https://ecom-vercel-backend.vercel.app/updateproduct", {
+      const response = await fetch(`${baseURL}/updateproduct`, {
         method: "POST",
         headers: {
           Accept: "application/json",
