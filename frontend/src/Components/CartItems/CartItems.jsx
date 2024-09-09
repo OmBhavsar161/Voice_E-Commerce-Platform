@@ -44,7 +44,7 @@ const CartItems = () => {
   }, []);
 
   // Combine local and MongoDB products
-  const combinedProducts = [...all_product, ...mongoProducts];
+  const combinedProducts = [...mongoProducts];
 
   // Function to get product details by ID (local or MongoDB)
   const getProductById = (id) => {
