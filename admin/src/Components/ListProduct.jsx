@@ -7,7 +7,7 @@ const ListProduct = () => {
   const [isEditing, setIsEditing] = useState(null); // Track which product is being edited
   const [editedProduct, setEditedProduct] = useState({}); // Store edited product details
   const baseURL =  import.meta.env.VITE_API_URL;
-
+    
   const fetchInfo = async () => {
     try {
       const response = await fetch(`${baseURL}/allproducts`);
