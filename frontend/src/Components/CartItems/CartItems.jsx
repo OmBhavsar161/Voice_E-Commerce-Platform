@@ -37,7 +37,7 @@ const CartItems = () => {
         }
       } catch (error) {
         console.error('Error fetching products from MongoDB:', error);
-      }
+      } 
     };
 
     fetchMongoProducts();
