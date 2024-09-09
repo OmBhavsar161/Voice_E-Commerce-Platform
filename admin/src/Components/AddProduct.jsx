@@ -48,7 +48,7 @@ const AddProduct = () => {
     }
 
     const formData = new FormData();
-    formData.append('product-vercel', imageFile); // Append the file with field name 'product' ------ change name here
+    formData.append('product-vercel', imageFile); // Append the file with field name 'product' --------------------- change name here
 
     try {
       const uploadResponse = await fetch(`${baseURL}/upload`, {
