@@ -37,14 +37,14 @@ const CartItems = () => {
         }
       } catch (error) {
         console.error('Error fetching products from MongoDB:', error);
-      } 
+      }
     };
 
     fetchMongoProducts();
   }, []);
 
   // Combine local and MongoDB products
-  const combinedProducts = [...mongoProducts];
+  const combinedProducts = [...all_product, ...mongoProducts];
 
   // Function to get product details by ID (local or MongoDB)
   const getProductById = (id) => {
