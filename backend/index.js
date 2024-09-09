@@ -20,8 +20,8 @@ const convertINRToUSD = (amountInINR) => {
 app.use(express.json());
 
 const allowedOrigins = [
-  "https://ecom-vercel-frontend.vercel.app",
-  "https://ecom-vercel-admin.vercel.app",
+  "https://voice-frontend.vercel.app",
+  "https://voice-adminpanel.vercel.app",
   "http://localhost:5174",
   "https://localhost:5174",
   "http://localhost:5173",
