@@ -55,11 +55,24 @@ const ShopContextProvider = (props) => {
     return totalAmount;
   };
 
+  // New updateCartItemQuantity function
+  const updateCartItemQuantity = (itemId, quantity) => {
+    setCartItems((prev) => {
+      const newCart = { ...prev };
+      if (quantity <= 0) {
+        delete newCart[itemId]; // Remove item if quantity becomes 0 or less
+      } else {
+        newCart[itemId] = quantity;
+      }
+      return newCart;
+    });
+  };
+
   // Total cart amount converted in USD
   const getTotalCartAmountInUSD = () => {
     let totalAmount = 0;
     const exchangeRateToUSD = 0.01192; // INR to USD exchange rate (1 USD = 83.91 INR)
-  
+
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
         let itemInfo = all_product.find(
@@ -70,13 +83,12 @@ const ShopContextProvider = (props) => {
         }
       }
     }
-  
+
     // Convert to USD and round to 2 decimal places
-  const totalAmountInUSD = (totalAmount * exchangeRateToUSD).toFixed(2);
-  
+    const totalAmountInUSD = (totalAmount * exchangeRateToUSD).toFixed(2);
+
     return totalAmountInUSD;
   };
-  
 
   const getTotalCartItems = () => {
     let totalItem = 0;
@@ -96,6 +108,7 @@ const ShopContextProvider = (props) => {
     getTotalCartAmount,
     getTotalCartItems,
     getTotalCartAmountInUSD,
+    updateCartItemQuantity, // Added this function to context
   };
 
   return (
