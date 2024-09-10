@@ -31,6 +31,7 @@ const CartItems = () => {
 
   // State to hold products fetched from MongoDB
   const [mongoProducts, setMongoProducts] = useState([]);
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Fetch products from MongoDB
