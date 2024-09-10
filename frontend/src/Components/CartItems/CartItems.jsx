@@ -36,7 +36,7 @@ const CartItems = () => {
     // Fetch products from MongoDB
     const fetchMongoProducts = async () => {
       try {
-        const response = await fetch("http://localhost:4000/allproducts");
+        const response = await fetch(`${baseURL}/allproducts`);
         if (response.ok) {
           const data = await response.json();
           setMongoProducts(data);
@@ -101,7 +101,7 @@ const CartItems = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:4000/create-checkout-session",
+        `${baseURL}/create-checkout-session`,
         {
           method: "POST",
           headers: headers,
