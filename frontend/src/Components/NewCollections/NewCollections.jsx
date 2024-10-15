@@ -13,7 +13,7 @@ const NewCollections = () => {
         const data = await response.json();
         setNewCollection(data); // Set the fetched data to state
       } catch (error) {
-        console.error("Error fetching new collections:", error);
+        console.error("Error fetching new collections:", error); 
       }
     };
     fetchNewCollections();

@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Import for navigation
 import { ShopContext } from "../../Context/ShopContext";
 import remove_icon from "../Assets/delete_icon.svg";
 import { loadStripe } from "@stripe/stripe-js";
+import { toast, ToastContainer } from "react-toastify"; // Import Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 
 const stripePromise = loadStripe(
   "pk_test_51Pt0JJRsPZLVhKagcrJ3N3QjNLg5S2sYrF1Fy1MmdnsZzZ7KE9P76bWJcZIRNxAWvPuewGNm1vKbs9lLwPgkmBTG00jDIDyYo7"
@@ -29,8 +32,9 @@ const CartItems = () => {
     updateCartItemQuantity,
   } = useContext(ShopContext);
 
-  // State to hold products fetched from MongoDB
   const [mongoProducts, setMongoProducts] = useState([]);
+  const [address, setAddress] = useState(""); // State to store address
+  const navigate = useNavigate(); // Initialize navigate
   const baseURL =  import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -49,18 +53,38 @@ const CartItems = () => {
       }
     };
 
+    // Fetch address from user profile
+    const fetchAddress = async () => {
+      const authToken = localStorage.getItem("authToken");
+      if (authToken) {
+        try {
+          const response = await fetch(`${baseURL}/user/profile`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setAddress(data.address || "Address not available"); // Set address state
+          } else {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+        } catch (error) {
+          console.error("Error fetching address:", error);
+        }
+      }
+    };
+
     fetchMongoProducts();
+    fetchAddress(); // Call the fetchAddress function
   }, []);
 
-  // Combine local and MongoDB products
   const combinedProducts = [...all_product, ...mongoProducts];
 
-  // Function to get product details by ID (local or MongoDB)
   const getProductById = (id) => {
     return combinedProducts.find((p) => p.id === Number(id));
   };
 
-  // Calculate total amounts
   const calculateTotalAmount = () => {
     return Object.keys(cartItems).reduce((total, itemId) => {
       const product = getProductById(itemId);
@@ -77,12 +101,32 @@ const CartItems = () => {
   };
 
   const makePayment = async () => {
+    const authToken = localStorage.getItem("authToken");
+
+    if (!authToken) {
+      toast.error("Please login before proceeding", { autoClose: 2000 });
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+      return;
+    }
+
+    // Check if address is null, empty, or contains only whitespace
+  if (!address || address.trim() === "" || address === "Address not available") {
+    toast.error("Please add your delivery address", { autoClose: 2000 });
+    return; // Stop further execution
+  }
+
     const stripe = await stripePromise;
 
     const body = {
       items: Object.keys(cartItems)
         .map((itemId) => {
           const product = getProductById(itemId);
+          if (!product) {
+            console.warn(`Product with ID ${itemId} not found`);
+            return null; // Skip this item if product is not found
+          }
           return {
             id: product.id,
             name: product.name,
@@ -90,7 +134,7 @@ const CartItems = () => {
             quantity: cartItems[itemId],
           };
         })
-        .filter((item) => item.quantity > 0),
+        .filter((item) => item && item.quantity > 0), // Filter out any null or invalid items
       totalAmountInUSD: calculateTotalAmountInUSD(),
     };
 
@@ -130,6 +174,7 @@ const CartItems = () => {
 
   return (
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
+      <ToastContainer /> {/* Add ToastContainer for notifications */}
       <div className="grid grid-cols-6 gap-4 font-semibold text-gray-700 border-b pb-4 border-gray-300">
         <p className="text-left pl-4">Products</p>
         <p className="text-left">Title</p>
@@ -159,7 +204,7 @@ const CartItems = () => {
                 className="ml-2 w-12 h-12 flex items-center justify-center rounded-full hover:ring-2 hover:ring-green-400 active:bg-gray-300 bg-gray-200 text-gray-800 font-medium text-lg"
                 onClick={() =>
                   updateCartItemQuantity(e.id, cartItems[e.id] + 1)
-                } // Add this onClick handler
+                }
               >
                 {cartItems[e.id]}
               </button>
@@ -197,6 +242,18 @@ const CartItems = () => {
               Submit
             </button>
           </div>
+          <div className="mt-4">
+            <div className="flex">
+              <p className="mt-4 font-semibold text-lg">Delivery Address</p>
+              <Link to="/profile">
+                <button className="bg-green-600 text-white px-4 rounded-3xl hover:bg-green-700 transition-colors mt-[19px] ml-4">
+                  Edit
+                </button>
+              </Link>
+            </div>
+            <p className="text-gray-800 mt-4">{address}</p>{" "}
+            {/* Display address */}
+          </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h1 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -213,23 +270,21 @@ const CartItems = () => {
               <p>Free</p>
             </div>
             <hr />
+            <div className="flex justify-between text-lg font-semibold text-gray-800">
+              <p>Total (INR)</p>
+              <p>₹{formatPrice(calculateTotalAmount())}</p>
+            </div>
+            <div className="flex justify-between text-lg font-semibold text-gray-800">
+              <p>Total (USD)</p>
+              <p>${calculateTotalAmountInUSD()}</p>
+            </div>
+            <button
+              onClick={makePayment}
+              className="bg-green-600 text-white py-3 rounded-lg w-full hover:bg-green-700 transition-colors"
+            >
+              Proceed to Checkout
+            </button>
           </div>
-          <div className="flex justify-between items-center mt-4 text-gray-800 font-semibold">
-            <h3 className="text-lg">Total (₹)</h3>
-            <h3 className="text-lg">₹{formatPrice(calculateTotalAmount())}</h3>
-          </div>
-          <div className="flex justify-between items-center mt-4 text-gray-800 font-semibold">
-            <h3 className="text-lg">Total ($)</h3>
-            <h3 className="text-lg">
-              ${formatPrice(calculateTotalAmountInUSD())}
-            </h3>
-          </div>
-          <button
-            onClick={makePayment}
-            className="w-full bg-green-600 text-white uppercase py-3 px-4 mt-6 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Proceed To Checkout
-          </button>
         </div>
       </div>
     </div>
@@ -237,3 +292,4 @@ const CartItems = () => {
 };
 
 export default CartItems;
+// perfect code

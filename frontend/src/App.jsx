@@ -11,6 +11,8 @@ import All_Products_Display from "./Pages/All_Products_Display";
 import Support from "./Components/Support/Support";
 import SuccessPage from "./Pages/SuccessPage";
 import { useLocation } from "react-router-dom";
+import Profile from "./Pages/Profile";
+import OrderedItems from "./Pages/OrderedItems";
 
 function App() {
   const location = useLocation();
@@ -31,6 +33,8 @@ function App() {
         <Route path="/allproductsdisplay" element={<All_Products_Display />} />
         <Route path="/support" element={<Support />} />
         <Route path="/success" element={<SuccessPage />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/ordereditems" element={<OrderedItems />} />
       </Routes>
       {!isSuccessPage && <Footer />}
     </div>

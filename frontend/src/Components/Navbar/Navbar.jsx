@@ -65,6 +65,23 @@ function Navbar() {
     setIsMenuOpen(false);
   };
 
+  // Handle login/logout
+  const handleAuthClick = () => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      // User is logged in; handle logout
+      localStorage.removeItem("authToken");
+      window.location.reload(); // Force a full page reload to update the Navbar
+      navigate("/");
+    } else {
+      // User is not logged in; navigate to login page
+      navigate("/login");
+    }
+  };
+
+  // Check if user is logged in
+  const isLoggedIn = Boolean(localStorage.getItem("authToken"));
+
   return (
     <div className="navbar bg-gray-600" ref={menuRef}>
       <div className="navbar-start">
@@ -141,11 +158,11 @@ function Navbar() {
         <div className="flex justify-center items-center gap-4 xl:pl-10 md:gap-0">
           {/* Voice Logo */}
           <Link to="/">
-          <img
-            src={logo}
-            alt="Logo"
-            className="hidden md:block w-10 md:w-20 xl:w-24 lg:w-20"
-          />
+            <img
+              src={logo}
+              alt="Logo"
+              className="hidden md:block w-10 md:w-20 xl:w-24 lg:w-20"
+            />
           </Link>
           <Link to="/" onClick={() => setIsMenuOpen(false)}>
             <p className="text-2xl xl:text-4xl lg:text-3xl font-sriracha text-white cursor-pointer sm:pl-2">
@@ -213,12 +230,33 @@ function Navbar() {
           </li>
         </ul>
       </div>
-      <div className="navbar-end  xl:space-x-8 xl:pr-6 lg:pr-2 lg:space-x-4 sm:space-x-4">
-        <Link to="/login">
-          <button className="bg-slate-200 xl:px-4 xl:py-2 lg:px-4 lg:py-[5px] sm:px-4 sm:py-1 rounded-2xl lg:active:bg-slate-300 lg:active:text-black active:bg-gray-700 active:text-white md:hover:ring-4 md:hover:ring-blue-600 transition-all ease-linear">
-            Login
+      <div className="navbar-end xl:space-x-8 xl:pr-6 lg:pr-2 lg:space-x-4 sm:space-x-4">
+        {/* Conditional Auth Button */}
+        <button
+          onClick={handleAuthClick}
+          className={`bg-slate-200 xl:px-4 xl:py-2 lg:px-4 lg:py-[5px] sm:px-4 sm:py-1 rounded-2xl 
+                      ${
+                        isLoggedIn
+                          ? "lg:active:bg-red-300 lg:active:text-black active:bg-red-700 active:text-white md:hover:ring-4 md:hover:ring-red-600"
+                          : "lg:active:bg-slate-300 lg:active:text-black active:bg-gray-700 active:text-white"
+                      } 
+                      md:hover:ring-4 md:hover:ring-blue-600 transition-all ease-linear`}
+        >
+          {isLoggedIn ? "Logout" : "Login"}
+        </button>
+
+        {/* Add Profile Section */}
+        {isLoggedIn && (
+          <button
+            onClick={() => navigate("/profile")} // Redirect to profile page
+            className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
+               rounded-full h-10 w-10 flex items-center justify-center 
+               transition-all ease-in-out duration-200 hover:scale-105"
+          >
+            <span className="text-white font-bold">V</span>
           </button>
-        </Link>
+        )}
+
         <Link to="/cart">
           <button className="p-2 hover:bg-gray-700 hover:bg-opacity-30 rounded-lg transition-all ease-out delay-50">
             <div className="relative">

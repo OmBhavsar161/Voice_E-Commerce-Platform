@@ -6,7 +6,7 @@ export const ShopContext = createContext(null);
 const getDefaultCart = (allProductData) => {
   let cart = {};
   for (let index = 0; index < allProductData.length; index++) {
-    cart[allProductData[index].id] = 0; // Use product ID instead of index
+    cart[allProductData[index].id] = 0; // Initialize cart items with 0 quantity
   }
   return cart;
 };
@@ -14,37 +14,146 @@ const getDefaultCart = (allProductData) => {
 const ShopContextProvider = (props) => {
   const [all_product, setAllProduct] = useState(allProductData);
   const [cartItems, setCartItems] = useState(() =>
-    getDefaultCart(allProductData)
+    JSON.parse(localStorage.getItem('cart')) || getDefaultCart(allProductData)
   );
+  const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+  const baseURL =  import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    console.log("Cart Items Updated:", cartItems);
-  }, [cartItems]);
+    if (authToken) {
+      const fetchCartFromBackend = async () => {
+        try {
+          const response = await fetch(`${baseURL}/cart`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
 
-  const addToCart = (itemId, quantity) => {
-    setCartItems((prev) => {
-      const newCart = { ...prev, [itemId]: (prev[itemId] || 0) + quantity };
-      return newCart;
-    });
+          if (response.ok) {
+            const data = await response.json();
+            setCartItems(data.cart); // Initialize cartItems with backend data
+            // Sync local cart with backend if needed
+            syncLocalCartWithBackend();
+          } else {
+            console.error("Failed to fetch cart data");
+          }
+        } catch (error) {
+          console.error("Error fetching cart data:", error);
+        }
+      };
+
+      fetchCartFromBackend();
+    }
+  }, [authToken]);
+
+  const syncLocalCartWithBackend = async () => {
+    const localCart = JSON.parse(localStorage.getItem('cart')) || {};
+    
+    if (Object.keys(localCart).length === 0) return; // No local cart to sync
+
+    try {
+      await Promise.all(Object.keys(localCart).map(async (itemId) => {
+        const quantity = localCart[itemId];
+        if (quantity > 0) {
+          await fetch(`${baseURL}/cart/add`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({ productId: itemId.toString(), quantity }),
+          });
+        }
+      }));
+
+      // Clear local storage after syncing
+      localStorage.removeItem('cart');
+      setCartItems(getDefaultCart(all_product)); // Reset cartItems to default
+    } catch (error) {
+      console.error("Error syncing local cart with backend:", error);
+    }
   };
 
-  const removeFromCart = (itemId) => {
-    setCartItems((prev) => {
-      const newCart = { ...prev };
-      if (newCart[itemId] > 1) {
-        newCart[itemId] -= 1;
+  const addToCart = async (itemId, quantity) => {
+    console.log("Sending productId and quantity:", { productId: itemId, quantity });
+
+    if (!authToken) {
+      // Update local cart and localStorage if user is not logged in
+      const updatedCart = { ...cartItems, [itemId]: (cartItems[itemId] || 0) + quantity };
+      setCartItems(updatedCart);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      return;
+    }
+
+    try {
+      const response = await fetch(`${baseURL}/cart/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ productId: itemId.toString(), quantity }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCartItems(data.cart);
       } else {
-        delete newCart[itemId];
+        console.error("Failed to add item to cart");
       }
-      return newCart;
-    });
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+    }
+  };
+
+  const removeFromCart = async (itemId, quantity = 1) => {
+    if (!authToken) {
+      // Update local cart and localStorage if user is not logged in
+      const updatedCart = { ...cartItems };
+      if (updatedCart[itemId] > 0) {
+        updatedCart[itemId] = Math.max(0, updatedCart[itemId] - quantity);
+        if (updatedCart[itemId] === 0) delete updatedCart[itemId];
+      }
+      setCartItems(updatedCart);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      return;
+    }
+
+    try {
+      const response = await fetch(`${baseURL}/cart/remove`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ productId: itemId.toString(), quantity }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCartItems(data.cart); // Update cart with the backend response
+      } else {
+        console.error("Failed to remove item from cart");
+      }
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
+  };
+
+  const updateCartItemQuantity = async (itemId, quantity) => {
+    if (quantity <= 0) {
+      await removeFromCart(itemId, -quantity); // If quantity is zero or less, use remove
+    } else {
+      await addToCart(itemId, quantity - (cartItems[itemId] || 0)); // Update with the new quantity
+    }
   };
 
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
-        let itemInfo = all_product.find(
+        const itemInfo = all_product.find(
           (product) => product.id === Number(item)
         );
         if (itemInfo) {
@@ -55,39 +164,10 @@ const ShopContextProvider = (props) => {
     return totalAmount;
   };
 
-  // New updateCartItemQuantity function
-  const updateCartItemQuantity = (itemId, quantity) => {
-    setCartItems((prev) => {
-      const newCart = { ...prev };
-      if (quantity <= 0) {
-        delete newCart[itemId]; // Remove item if quantity becomes 0 or less
-      } else {
-        newCart[itemId] = quantity;
-      }
-      return newCart;
-    });
-  };
-
-  // Total cart amount converted in USD
   const getTotalCartAmountInUSD = () => {
-    let totalAmount = 0;
-    const exchangeRateToUSD = 0.01192; // INR to USD exchange rate (1 USD = 83.91 INR)
-
-    for (const item in cartItems) {
-      if (cartItems[item] > 0) {
-        let itemInfo = all_product.find(
-          (product) => product.id === Number(item)
-        );
-        if (itemInfo) {
-          totalAmount += itemInfo.new_price * cartItems[item];
-        }
-      }
-    }
-
-    // Convert to USD and round to 2 decimal places
-    const totalAmountInUSD = (totalAmount * exchangeRateToUSD).toFixed(2);
-
-    return totalAmountInUSD;
+    const totalAmount = getTotalCartAmount();
+    const exchangeRateToUSD = 0.01192; // INR to USD exchange rate
+    return (totalAmount * exchangeRateToUSD).toFixed(2);
   };
 
   const getTotalCartItems = () => {
@@ -97,7 +177,13 @@ const ShopContextProvider = (props) => {
         totalItem += cartItems[item];
       }
     }
-    return totalItem; // Add this return statement
+    return totalItem;
+  };
+
+  const clearCart = () => {
+    const defaultCart = getDefaultCart(allProductData); // Get default cart
+    setCartItems(defaultCart); // Reset cartItems to default
+    localStorage.setItem('cart', JSON.stringify(defaultCart)); // Update localStorage
   };
 
   const contextValue = {
@@ -108,7 +194,8 @@ const ShopContextProvider = (props) => {
     getTotalCartAmount,
     getTotalCartItems,
     getTotalCartAmountInUSD,
-    updateCartItemQuantity, // Added this function to context
+    updateCartItemQuantity,
+    clearCart, // Add clearCart to context value
   };
 
   return (
@@ -119,3 +206,4 @@ const ShopContextProvider = (props) => {
 };
 
 export default ShopContextProvider;
+// perfect code  
