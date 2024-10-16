@@ -73,7 +73,6 @@ const LoginSignup = () => {
 
           // Check if the logged-in user is the admin
           if (email === 'adminvoice@gmail.com') {
-            
             window.open(AdminPanelUrl, '_blank'); // Open the admin panel in a new tab
             window.location.replace("/");
             
