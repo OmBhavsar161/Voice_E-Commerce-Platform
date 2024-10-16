@@ -62,7 +62,7 @@ const LoginSignup = () => {
         toast.error(errorData.error || 'Something went wrong', { autoClose: 3000 });
         throw new Error(errorData.error || 'Something went wrong');
       }
-
+ 
       const data = await response.json();
       toast.success(isSignup ? 'Sign Up successful!' : 'Login successful!', { autoClose: 3000 });
 
