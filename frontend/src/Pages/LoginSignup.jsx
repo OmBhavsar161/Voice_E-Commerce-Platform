@@ -11,7 +11,8 @@ const LoginSignup = () => {
     agreeTerms: false,
   });
   const [errors, setErrors] = useState({});
-  const baseURL =  import.meta.env.VITE_API_URL;
+  const baseURL = import.meta.env.VITE_API_URL;
+  const AdminPanelUrl = import.meta.env.VITE_ADMINPANEL_URL; // Admin Panel URL
 
   // Reset scroll position when toggling between Sign Up and Login
   useEffect(() => {
@@ -69,7 +70,13 @@ const LoginSignup = () => {
         // Delay the redirection by 2 seconds for login
         setTimeout(() => {
           localStorage.setItem('authToken', data.token); // Store the token in local storage
-          window.location.replace("/");
+
+          // Check if the logged-in user is the admin
+          if (email === 'adminvoice@gmail.com') {
+            window.open(AdminPanelUrl, '_blank'); // Open the admin panel in a new tab
+          } else {
+            window.location.replace("/"); // Redirect normal users to homepage
+          }
         }, 3000);
       } else {
         // Redirect to login page after signup success
