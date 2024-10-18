@@ -24,7 +24,7 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); // Stop loader after 3 seconds
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
