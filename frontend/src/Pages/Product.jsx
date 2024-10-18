@@ -5,39 +5,53 @@ import Breadcrum from '../Components/Breadcrums/Breadcrum';
 import ProductDisplay from '../Components/ProductDisplay/ProductDisplay';
 import DescriptionBox from '../Components/DescriptionBox/DescriptionBox';
 import RelatedProducts from '../Components/RelatedProducts/RelatedProducts';
+import Loader from '../Pages/Loader'; // Import your loader component
 
 const Product = () => {
+  window.scrollTo(0, 0);
+  
   const { all_product } = useContext(ShopContext);
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true); // Track the loading state
+  const baseURL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    // Find product in local context (ShopContext)
     const localProduct = all_product.find((e) => e.id === Number(productId));
-    const baseURL =  import.meta.env.VITE_API_URL;
 
-    if (localProduct) {
-      setProduct(localProduct);
-    } else {
-      const fetchProductFromMongo = async () => {
-        try {
+    // Function to fetch product data from MongoDB if not found locally
+    const fetchProductFromMongo = async () => {
+      try {
+        setLoading(true); // Start loader when fetching starts
+
+        if (localProduct) {
+          // If product is found in local context, use it and stop loading
+          setProduct(localProduct);
+          setLoading(false); // Loader stops when local product is found
+        } else {
           const response = await fetch(`${baseURL}/product/${productId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
           const productData = await response.json();
           setProduct(productData);
-        } catch (error) {
-          console.error("Error fetching product from MongoDB:", error);
-          // Optionally handle or set fallback product here
+          setLoading(false); // Loader stops when data from API is fetched
         }
-      };
+      } catch (error) {
+        console.error("Error fetching product from MongoDB:", error);
+        setLoading(false); // Stop loader on error
+      }
+    };
 
-      fetchProductFromMongo();
-    }
-  }, [productId, all_product]);
+    // Initiate product fetching
+    fetchProductFromMongo();
 
-  if (!product) {
-    return <div>Loading...</div>; // Show a loading state while fetching data
+  }, [productId, all_product, baseURL]);
+
+  // Render loader while loading
+  if (loading) {
+    return <Loader />;
   }
 
   return (
@@ -45,7 +59,7 @@ const Product = () => {
       <Breadcrum product={product} />
       <ProductDisplay product={product} />
       <DescriptionBox />
-      <RelatedProducts currentCategory={product.category} /> {/* Pass the current product's category as a prop */}
+      <RelatedProducts currentCategory={product?.category} /> {/* Pass the current product's category as a prop */}
     </div>
   );
 }
