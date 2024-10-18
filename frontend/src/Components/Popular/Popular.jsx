@@ -1,27 +1,37 @@
 import React, { useEffect, useState } from "react";
 import Item from "../Item/Item";
+import Loader from '../../Pages/Loader'; // Import your loader component
 
 const Popular = () => {
   const [popularProducts, setPopularProducts] = useState([]);
-  const baseURL =  import.meta.env.VITE_API_URL;
+  const [loading, setLoading] = useState(true); // State to track loading
+  const baseURL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Fetch popular products from your backend or context
     const fetchPopularProducts = async () => {
       try {
+        setLoading(true); // Start loader when fetching begins
         const response = await fetch(`${baseURL}/popular-products`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
         setPopularProducts(data);
+        setLoading(false); // Stop loader once data is fetched
       } catch (error) {
         console.error("Error fetching popular products:", error);
+        setLoading(false); // Stop loader in case of error
       }
     };
 
-    fetchPopularProducts();
-  }, []);
+    fetchPopularProducts(); // Fetch data
+  }, [baseURL]);
+
+  // Render loader while data is being fetched
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col items-center gap-[10px] h-[90vh] ml-4 mt-4">
