@@ -172,17 +172,17 @@ const CartItems = () => {
     }
   };
 
-  const handleIncrement = (id) => {
-    const product = getProductById(id);
-    if (product) {
-      if (cartItems[id] < product.quantity) { // Check against backend quantity
-        updateCartItemQuantity(id, cartItems[id] + 1);
-      } 
-      // else {
-      //   toast.error("Cannot exceed available quantity", { autoClose: 2000 });
-      // }
-    }
-  };
+  // const handleIncrement = (id) => {
+  //   const product = getProductById(id);
+  //   if (product) {
+  //     if (cartItems[id] < product.quantity) { // Check against backend quantity
+  //       updateCartItemQuantity(id, cartItems[id] + 1);
+  //     } 
+  //     // else {
+  //     //   toast.error("Cannot exceed available quantity", { autoClose: 2000 });
+  //     // }
+  //   }
+  // };
 
   return (
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
@@ -215,7 +215,7 @@ const CartItems = () => {
               <button
                 className="ml-2 w-12 h-12 flex items-center justify-center rounded-full hover:ring-2 hover:ring-green-400 active:bg-gray-300 bg-gray-200 text-gray-800 font-medium text-lg"
                 onClick={() =>
-                  handleIncrement(e.id)
+                  updateCartItemQuantity(e.id, cartItems[e.id] + 1)
                 }
               >
                 {cartItems[e.id]}
