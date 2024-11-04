@@ -23,6 +23,7 @@ const Profile = () => {
 
 
   useEffect(() => {
+    window.scrollTo(0, 0); 
     const token = localStorage.getItem("authToken");
 
     if (!token) {
@@ -122,7 +123,7 @@ const Profile = () => {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-lime-400 to-cyan-400 to-purple-400 p-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-lime-400 to-cyan-400 to-purple-400 p-8" >
         <div className="p-8 max-w-lg w-full bg-white shadow-md rounded-lg">
           <h1 className="text-3xl font-bold mb-10">Profile</h1>
           <form onSubmit={handleUpdate}>
