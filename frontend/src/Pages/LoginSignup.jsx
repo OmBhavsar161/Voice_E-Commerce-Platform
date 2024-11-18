@@ -92,7 +92,7 @@ const LoginSignup = () => {
   };
 
   return (
-    <div className="w-full h-screen bg-indigo-100 flex items-center justify-center">
+    <div className="w-full min-h-[700px] bg-indigo-100 flex items-center justify-center">
       <div className="w-[580px] bg-white py-8 px-16 rounded-lg shadow-lg">
         <h1 className="text-3xl mt-4 mb-14 mx-0">{isSignup ? 'Sign Up' : 'Login'}</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-8">
