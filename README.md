@@ -1,5 +1,5 @@
 
-# Voice – A Smart E-Commerce Platform for Audio Wearables  
+# Voice – An E-Commerce Platform for Audio Wearables  
 
 ## 📌 Abstract  
 **Voice** is a modern **MERN stack-based** e-commerce platform specializing in **TWS headphones** and **smartwatches**. Designed for a seamless shopping experience, Voice integrates:  
