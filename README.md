@@ -1,9 +1,23 @@
 **Title**:
 Voice Ecommerce Website
 
+# 🎧 Voice – A Smart E-Commerce Platform for Audio Wearables  
 
-Abstract:
-This project develops a seamless, user-friendly e-commerce platform with key features like product listings, user authentication, and payment integration. It emphasizes high performance, scalability, and a visually appealing design to enhance the online shopping experience.
+## 📌 Abstract  
+**Voice** is a modern **MERN stack-based** e-commerce platform specializing in **TWS headphones** and **smartwatches**. Designed for a seamless shopping experience, Voice integrates:  
+
+- 🔒 **Secure Authentication** using **JWT**  
+- 📦 **Real-Time Inventory Management**  
+- 💳 **Stripe-Based Payment Processing**  
+
+The platform features an **intuitive UI** built with **Tailwind CSS** and **Daisy UI**, ensuring a visually appealing and user-friendly experience.  
+
+### ⚙️ **Admin Panel Capabilities:**  
+- 🛍 **Efficient Product Management**  
+- 📊 **Order Tracking**  
+- 🛠 **User Support Handling**  
+
+Hosted on **Vercel**, Voice offers **high performance and scalability**, catering to a growing customer base. With **secure transactions, a dynamic product catalog, and efficient inventory control**, Voice stands as an **advanced, technology-driven solution** for audio and smartwatch enthusiasts.  
 
  
 ## 🛠 Tech Stack
