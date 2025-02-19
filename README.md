@@ -15,7 +15,7 @@ The platform features an **intuitive UI** built with **Tailwind CSS** and **Dais
 - 📊 **Order Tracking**  
 - 🛠 **User Support Handling**  
 
-Hosted on **Vercel**, Voice offers **high performance and scalability**, catering to a growing customer base. With **secure transactions, a dynamic product catalog, and efficient inventory control**, Voice stands as an **advanced, technology-driven solution** for audio and smartwatch enthusiasts.  
+Hosted on **Vercel**, Voice offers **high performance and scalability**, catering to a growing customer base. With **secure transactions, a dynamic product catalog, and efficient inventory control**, Voice stands as an **advanced, technology-driven solution** for audio and smartwatch enthusiasts.  <br/>
 
  
 ## 🛠 Tech Stack
