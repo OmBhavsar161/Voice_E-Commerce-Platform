@@ -1,5 +1,3 @@
-**Title**:
-Voice Ecommerce Website
 
 # 🎧 Voice – A Smart E-Commerce Platform for Audio Wearables  
 
