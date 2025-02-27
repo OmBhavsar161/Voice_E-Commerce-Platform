@@ -36,4 +36,5 @@ Hosted on **Vercel**, Voice offers **high performance and scalability**, caterin
 - **Vercel** (for deployment)
 - **Inventory Management** (to track product quantity)
 - **Admin Panel** (for managing users, products, and support data)
+- **Pabbly** (for automating the purchase confirmation emails using Stripe API data after a successful transaction.)
 
