@@ -4,7 +4,7 @@
 ## 📌 Abstract  
 **Voice** is a modern **MERN stack-based** e-commerce platform specializing in **TWS headphones** and **smartwatches**. Designed for a seamless shopping experience, Voice integrates:  
 
-- 🔒 **Secure Authentication** using **JWT**  
+- 🔒 **Secure Authentication using JWT**  
 - 📦 **Real-Time Inventory Management**  
 - 💳 **Stripe-Based Payment Processing**  
 
